@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客</title>
+    <link rel="stylesheet" href="./static/css/style.css">
+    <link rel="stylesheet" href="./static/css/root.css">
+    <style>
+        .blog-container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 60px;
+        }
+
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .blog-title {
+            font-size: 26px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .blog-title svg {
+            width: 26px;
+            height: 26px;
+            fill: var(--fill);
+        }
+
+        .blog-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .create-btn {
+            padding: 10px 25px;
+            background: var(--item_bg_color);
+            color: var(--main_text_color);
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            backdrop-filter: blur(var(--card_filter));
+            -webkit-backdrop-filter: blur(var(--card_filter));
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .create-btn:hover {
+            background: var(--item_hover_color);
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: var(--item_bg_color);
+            color: var(--main_text_color);
+            text-decoration: none;
+            border-radius: 8px;
+            backdrop-filter: blur(var(--card_filter));
+            -webkit-backdrop-filter: blur(var(--card_filter));
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--item_hover_color);
+            transform: translateY(-2px);
+        }
+
+        .blog-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .blog-item {
+            background: var(--item_bg_color);
+            border-radius: 8px;
+            padding: 20px;
+            backdrop-filter: blur(var(--card_filter));
+            -webkit-backdrop-filter: blur(var(--card_filter));
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .blog-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            gap: 15px;
+        }
+
+        .blog-item-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--item_left_title_color);
+            margin: 0;
+        }
+
+        .blog-item-date {
+            font-size: 12px;
+            color: var(--item_left_text_color);
+            white-space: nowrap;
+        }
+
+        .blog-item-content {
+            color: var(--item_left_text_color);
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .blog-item-content img {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: block;
+        }
+
+        .blog-item-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-delete {
+            padding: 8px 15px;
+            background: rgba(255, 71, 87, 0.8);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 107, 129, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--item_bg_color);
+            border-radius: 8px;
+            backdrop-filter: blur(var(--card_filter));
+            -webkit-backdrop-filter: blur(var(--card_filter));
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            color: var(--item_left_title_color);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--item_left_text_color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--item_bg_color);
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(var(--card_filter));
+            -webkit-backdrop-filter: blur(var(--card_filter));
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: var(--item_left_title_color);
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--item_left_title_color);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--item_left_title_color);
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: var(--item_left_text_color);
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--item_left_title_color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .toolbar-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--item_left_title_color);
+        }
+
+        .editor-content {
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--item_left_title_color);
+            font-size: 14px;
+            line-height: 1.8;
+            overflow-y: auto;
+        }
+
+        .editor-content:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-content img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: block;
+        }
+
+        .editor-content:empty:before {
+            content: "请输入文章内容...";
+            color: var(--item_left_text_color);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--item_left_title_color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @media (max-width: 800px) {
+            .blog-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .blog-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .blog-item-header {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .editor-toolbar {
+                gap: 5px;
+            }
+
+            .toolbar-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blog-container">
+        <div class="blog-header">
+            <div class="blog-title">
+                <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M832 64H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V96c0-17.7-14.3-32-32-32z m-40 824H232V136h560v752z"></path>
+                    <path d="M312 240h400v56H312zM312 376h400v56H312zM312 512h280v56H312z"></path>
+                </svg>
+                我的博客
+            </div>
+            <div class="blog-actions">
+                <button class="create-btn" onclick="openModal()">
+                    <svg width="16" height="16" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                        <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64z m192 472c0 4.4-3.6 8-8 8H544v152c0 4.4-3.6 8-8 8h-48c-4.4 0-8-3.6-8-8V544H328c-4.4 0-8-3.6-8-8v-48c0-4.4 3.6-8 8-8h152V328c0-4.4 3.6-8 8-8h48c4.4 0 8 3.6 8 8v152h152c4.4 0 8 3.6 8 8v48z"></path>
+                    </svg>
+                    发布文章
+                </button>
+                <a href="index.html" class="back-btn">返回主页</a>
+            </div>
+        </div>
+
+        <div id="blogList" class="blog-list">
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>发布新文章</h2>
+            <div class="form-group">
+                <label for="title">标题</label>
+                <input type="text" id="title" placeholder="请输入文章标题">
+            </div>
+            <div class="form-group">
+                <label>内容</label>
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" onclick="insertImage()">
+                        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M928 160H96c-17.7 0-32 14.3-32 32v640c0 17.7 14.3 32 32 32h832c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32z m-40 632H136V232h752v560z"></path>
+                            <path d="M240 376h200v56H240zM240 512h200v56H240zM240 648h200v56H240zM544 376h280v56H544zM544 512h280v56H544zM544 648h280v56H544z"></path>
+                        </svg>
+                        插入图片
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('bold')">
+                        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M688 432h-136V232h136c66.2 0 120 53.8 120 120s-53.8 120-120 120z m-248 0V232H336v560h104V560h248c110.5 0 200-89.5 200-200s-89.5-200-200-200H336z"></path>
+                        </svg>
+                        加粗
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('italic')">
+                        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M768 192H256l32 64h448l-32-64z m-96 128H352l-32 64h352l32-64z m-160 640h-32l-64-512h32l64 512z"></path>
+                        </svg>
+                        斜体
+                    </button>
+                    <button class="toolbar-btn" onclick="formatText('underline')">
+                        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M896 832H128v64h768v-64z m-96-640H224v64h576v-64z m-32 128H256v320h512V320z"></path>
+                        </svg>
+                        下划线
+                    </button>
+                </div>
+                <div class="editor-content" id="editor" contenteditable="true"></div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveBlog()">发布</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+
+    <script>
+        let blogs = JSON.parse(localStorage.getItem('blogs') || '[]');
+
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('title').value = '';
+            document.getElementById('editor').innerHTML = '';
+        }
+
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('editor').focus();
+        }
+
+        function insertImage() {
+            document.getElementById('imageInput').click();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgHtml = `<img src="${e.target.result}" alt="图片">`;
+                    document.execCommand('insertHTML', false, imgHtml);
+                    document.getElementById('imageInput').value = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveBlog() {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('editor').innerHTML.trim();
+
+            if (!title) {
+                alert('请填写标题！');
+                return;
+            }
+
+            if (!content || content === '<br>') {
+                alert('请填写内容！');
+                return;
+            }
+
+            const blog = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                date: new Date().toLocaleString('zh-CN')
+            };
+
+            blogs.unshift(blog);
+            localStorage.setItem('blogs', JSON.stringify(blogs));
+            closeModal();
+            renderBlogs();
+        }
+
+        function deleteBlog(id) {
+            if (confirm('确定要删除这篇文章吗？')) {
+                blogs = blogs.filter(blog => blog.id !== id);
+                localStorage.setItem('blogs', JSON.stringify(blogs));
+                renderBlogs();
+            }
+        }
+
+        function renderBlogs() {
+            const blogList = document.getElementById('blogList');
+            
+            if (blogs.length === 0) {
+                blogList.innerHTML = `
+                    <div class="empty-state">
+                        <h2>📭 还没有文章</h2>
+                        <p>点击"发布文章"开始你的博客之旅吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            blogList.innerHTML = blogs.map(blog => `
+                <div class="blog-item" onclick="window.location.href='blog-detail.html?id=${blog.id}'">
+                    <div class="blog-item-header">
+                        <h3 class="blog-item-title">${blog.title}</h3>
+                        <span class="blog-item-date">📅 ${blog.date}</span>
+                    </div>
+                    <div class="blog-item-content">${blog.content}</div>
+                    <div class="blog-item-actions">
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteBlog(${blog.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        renderBlogs();
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
